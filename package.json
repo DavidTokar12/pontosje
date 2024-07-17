@@ -14,13 +14,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "engines": {
-    "node": "v22.4.1",
-    "npm": "v10.8.1"
+    "node": "v18.14.0",
+    "npm": "v9.3.1"
   },
   "eslintConfig": {
     "extends": [
