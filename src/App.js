@@ -11,7 +11,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Xd");
+        console.log("XD");
 
         // const response = await axios.get('http://127.0.0.1:8000/');
 
