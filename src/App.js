@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import axios from 'axios';
 
 function App() {
-  
+
   const [responseData, setResponseData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,15 +11,17 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/');
+        console.log("Xd");
 
-        if (response.status !== 200) {
-          throw new Error('Network response was not ok');
-        }
+        // const response = await axios.get('http://127.0.0.1:8000/');
 
-        console.log(response);
+        // if (response.status !== 200) {
+        //   throw new Error('Network response was not ok');
+        // }
 
-        setResponseData(response.data);
+        // console.log(response);
+
+        // setResponseData(response.data);
       } catch (error) {
         setError(error);
       } finally {
