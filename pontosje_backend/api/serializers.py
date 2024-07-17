@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import MyModel
+from .models import TextContent
 
 
-class MyModelSerializer(serializers.ModelSerializer):
+class TextContentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MyModel
+        model = TextContent
         fields = "__all__"

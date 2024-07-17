@@ -1,54 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import PricingPage from './pages/PricingPage';
+import SignUpPage from './pages/SignUpPage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
+import WriteGrammarCorrection from './pages/WriteGrammarCorrection'; // Import the new component
+import Navbar from './components/Navbar';
 
-function App() {
-
-  const [responseData, setResponseData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log("XD");
-
-        // const response = await axios.get('http://127.0.0.1:8000/');
-
-        // if (response.status !== 200) {
-        //   throw new Error('Network response was not ok');
-        // }
-
-        // console.log(response);
-
-        // setResponseData(response.data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-
-  if (error) return <p>Error: {error.message}</p>;
-
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1>API Response:</h1>
-        {responseData && (
-          <div>
-            <pre>{JSON.stringify(responseData, null, 2)}</pre>
-          </div>
-        )}
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/write" element={<WriteGrammarCorrection />} /> {/* Add the new route */}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
