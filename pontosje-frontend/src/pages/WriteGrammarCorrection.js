@@ -21,6 +21,7 @@ const WriteGrammarCorrection = () => {
     const sendToBackend = async (content) => {
         try {
             const response = await axios.post('http://localhost:8000/api/text-content/', { content });
+            console.log('gyasz')
             console.log(response.data)
             console.log('Response from Django API:', response.data);
             checkTaskStatus(response.data.task_id); // Start checking task status

@@ -16,5 +16,3 @@ COPY . /pontosje-frontend/
 # Expose port 3000 to allow communication to/from server
 EXPOSE 3000
 
-# Command to run the React development server
-CMD ["npm", "start"]
