@@ -18,9 +18,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-CELERY_BROKER_URL = "amqp://localhost"
+CELERY_BROKER_URL = "amqp://rabbitmq:5672/"
 CELERY_RESULT_BACKEND = "rpc"
-CELERY_IMPORTS = ("pontosje_backend.process_grammar",)
+CELERY_IMPORTS = ("api.process_grammar",)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
