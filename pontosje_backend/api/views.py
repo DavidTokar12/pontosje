@@ -7,13 +7,28 @@ from .serializers import TextContentSerializer
 from .process_grammar import correct_grammar
 
 
+from django.http import JsonResponse
+from celery.result import AsyncResult
+from django.conf import settings
+
+
+def task_status(request, task_id):
+    result = AsyncResult(task_id)
+    response_data = {
+        'status': result.status,
+    }
+    if result.status == 'SUCCESS':
+        response_data['result'] = result.result
+    return JsonResponse(response_data)
+
+
 class TextContentViewSet(viewsets.ViewSet):
     def create(self, request):
         serializer = TextContentSerializer(data=request.data)
         if serializer.is_valid():
 
             text_content = serializer.save()
-            text = serializer.validated_data.get("text")
+            text = serializer.validated_data.get("content")
 
             task = correct_grammar.delay(text)
 

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./pontosje_backend
+      dockerfile: Dockerfile
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./pontosje_backend:/pontosje_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+    environment:
+      - DJANGO_SETTINGS_MODULE=pontosje_backend.settings
+
+  frontend:
+    build:
+      context: ./pontosje-frontend
+      dockerfile: Dockerfile
+    command: npm start
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+  
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    ports:
+      - "5672:5672"  # RabbitMQ server port
+      - "15672:15672"  # RabbitMQ management plugin port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  celery-worker:
+    build:
+      context: ./pontosje_backend
+      dockerfile: Dockerfile
+    command: celery -A pontosje_backend worker --loglevel=info
+    depends_on:
+      - backend
+      - rabbitmq
+    environment:
+      - DJANGO_SETTINGS_MODULE=pontosje_backend.settings
+      - CELERY_BROKER_URL=amqp://rabbitmq:5672/

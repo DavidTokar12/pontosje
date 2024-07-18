@@ -6,29 +6,51 @@ import axios from 'axios';
 const WriteGrammarCorrection = () => {
     const [editorHtml, setEditorHtml] = useState('');
     const [timeoutId, setTimeoutId] = useState(null);
+
     const handleChange = (html) => {
         setEditorHtml(html);
         clearTimeout(timeoutId);
+
         const id = setTimeout(() => {
             sendToBackend(html);
         }, 2000);
+
         setTimeoutId(id);
     };
 
     const sendToBackend = async (content) => {
         try {
             const response = await axios.post('http://localhost:8000/api/text-content/', { content });
+            console.log(response.data)
             console.log('Response from Django API:', response.data);
+            checkTaskStatus(response.data.task_id); // Start checking task status
         } catch (error) {
             console.error('Error sending data to Django:', error);
         }
     };
 
+    const checkTaskStatus = async (taskId) => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/task_status/${taskId}`);
+            const data = response.data;
+
+            if (data.status === 'SUCCESS') {
+                console.log(`Task completed with result: ${data.result}`);
+            } else {
+                console.log('Task is still pending...');
+                setTimeout(() => checkTaskStatus(taskId), 1000); // Poll every second
+            }
+        } catch (error) {
+            console.error('Error checking task status:', error);
+        }
+    };
+
     useEffect(() => {
+        // Cleanup function to clear timeout when component unmounts or timeoutId changes
         return () => {
             clearTimeout(timeoutId);
         };
-    }, [timeoutId]);
+    }, [timeoutId]); // Run effect whenever timeoutId changes
 
     return (
         <div>
