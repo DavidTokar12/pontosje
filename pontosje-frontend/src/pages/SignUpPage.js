@@ -7,7 +7,7 @@ const SignUpPage = () => {
 
     const handleGoogleSignUp = () => {
 
-        navigate('/dashboard');
+        navigate('/write');
     };
 
     return (
