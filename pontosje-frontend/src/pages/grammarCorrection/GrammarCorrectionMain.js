@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import debounce from 'lodash.debounce';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { processHtmlContent } from "../../utils/grammarHtmlGenerator"
 import { correctGrammar, setOriginalText } from '../../slices/grammarSlice';
-
+import 'react-perfect-scrollbar/dist/css/styles.css';
 
 
 
@@ -70,18 +69,14 @@ const GrammarCorrectionMain = () => {
     // }, [editorHtml, editorChanging]);
 
     return (
-        <PerfectScrollbar
+        <ReactQuill
+            ref={quillRef}
+            value={editorHtml}
+            modules={GrammarCorrectionMain.modules}
+            formats={GrammarCorrectionMain.formats}
+            onChange={handleEditorChange}
             style={{ width: '100%', height: '100%' }}
-        >
-            <ReactQuill
-                ref={quillRef}
-                value={editorHtml}
-                modules={GrammarCorrectionMain.modules}
-                formats={GrammarCorrectionMain.formats}
-                onChange={handleEditorChange}
-                style={{ width: '100%', height: '100%' }}
-            />
-        </PerfectScrollbar>
+        />
     );
 };
 

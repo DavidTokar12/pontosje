@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import { Drawer, Divider } from '@mui/material';
+import React from 'react';
 import GrammarCorrectionMain from './GrammarCorrectionMain';
 import GrammarCollectionSideBar from './GrammarCollectionSideBar';
 
 const GrammarCorrectionWrapper = () => {
     return (
-        
         <div
             id='grammar-wrapper'
             style={{
                 display: 'flex',
-                flexGrow: 1,
                 height: '100%',
+                width: "100%",
             }}
         >
             <div
                 style={{
                     width: "20rem",
                     height: "100%",
+                    display: 'flex',
                 }}
             >
                 <GrammarCollectionSideBar />
@@ -25,12 +24,14 @@ const GrammarCorrectionWrapper = () => {
             <div
                 id="quill-scrollbar-wrapper"
                 style={{
-                    flexGrow: 1,
-                    display: 'flex',
-                    transition: 'margin-left 0.3s',
+                    display: "flex",
+                    flex: 1,
                 }}
             >
-                <GrammarCorrectionMain />
+                <div style={{ width: "100%", height: "100%", overflow: 'hidden' }}>
+                    <GrammarCorrectionMain />
+                </div>
+
             </div>
         </div>
     );
