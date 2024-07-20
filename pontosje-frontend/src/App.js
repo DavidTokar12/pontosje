@@ -1,56 +1,47 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import PontosjeAppDrawer from './components/Drawer';
 import HomePage from './pages/HomePage';
 import PricingPage from './pages/PricingPage';
 import SignUpPage from './pages/SignUpPage';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
 import ProfilePage from './pages/ProfilePage';
-import WriteGrammarCorrection from './pages/WriteGrammarCorrection'; // Import the new component
-import { useState, useRef, useEffect } from 'react';
+import GrammarCorrectionWrapper from './pages/grammarCorrection/GrammarCorrectionWrapper';
+import Box from '@mui/material/Box';
+import { useSelector } from 'react-redux';
+import { selectIsDrawerOpen, selectDrawerWidth } from './slices/appSlice'; // Adjust the path as necessary
+import CssBaseline from '@mui/material/CssBaseline';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+
+// const DrawerHeader = styled('div')(({ theme }) => ({
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'flex-end',
+//   ...theme.mixins.toolbar,
+// }));
 
 
 const App = () => {
-  const [navbarHeight, setNavbarHeight] = useState(0);
-  const appBarRef = useRef(null);
-
-  useEffect(() => {
-    if (appBarRef.current) {
-      setNavbarHeight(appBarRef.current.offsetHeight);
-    }
-  }, [appBarRef.current]);
 
   return (
-    <Router>
-      <div>
-        <AppBar position="static" ref={appBarRef}>
-          <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              pontosje
-            </Typography>
-            <Button color="inherit" component={Link} to="/">
-              Főoldal
-            </Button>
-            <Button color="inherit" component={Link} to="/pricing">
-              Árazás
-            </Button>
-            <Button color="inherit" component={Link} to="/signup">
-              Regisztráció
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/write" element={<WriteGrammarCorrection navbarHeight={navbarHeight} />} />
-        </Routes>
-      </div>
-    </Router>
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <Router>
+        <Navbar />
+        <PontosjeAppDrawer />
+
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }} style={{ height: "calc( 100vh - 64px )", width: "100wh", margin: 0, marginTop: "64px", padding: 0 }}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/write" element={<GrammarCorrectionWrapper />} />
+          </Routes>
+
+        </Box>
+      </Router >
+    </Box>
   );
 };
 
