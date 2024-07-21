@@ -5,24 +5,17 @@ import api from './api';
 export const correctGrammar = createAsyncThunk(
     'grammar/correctGrammar',
     async (text) => {
-        console.log('Posting: ', text);
-        const response = await api.post('/correct_grammar/', { content: text });
-        console.log('Response: ', response);
-
-        let result = { data: {state: 'PENDING'} };
-        const task_id = response.data.task_id;
-
-        while (result.data.state === 'PENDING' || result.data.state === 'PROGRESS') {
-            result = await api.get(`/correct_grammar/?task_id=${task_id}`);
-
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
+        try {
+            console.log("Sending text", text);
+            const response = await api.get('/correct_grammar/', {
+                params: { content: text }
+            });
+            console.log("Response", response);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching data", error);
+            throw error;
         }
-
-        if (result.state === 'FAILURE') {
-            throw new Error(result.status);
-        }
-
-        return result.result;
     }
 );
 
@@ -30,8 +23,10 @@ const grammarSlice = createSlice({
     name: 'grammar',
     initialState: {
         originalText: '',
+        
         correctionText: '',
-        corrections: {}, // { [componentId]: { correctionType, correctedText } }
+        corrections: {}, // { [componentId]: { correctionType, correctedText, word_definition } }
+
         timestamp: null,
         status: 'idle',
         error: null,
@@ -44,6 +39,7 @@ const grammarSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(correctGrammar.pending, (state) => {
+                console.log("Loading...");
                 state.status = 'loading';
             })
             .addCase(correctGrammar.fulfilled, (state, action) => {

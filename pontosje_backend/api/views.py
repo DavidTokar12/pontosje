@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import TextContent
-from .serializers import TextContentSerializer 
+from .serializers import TextContentSerializer
 from .process_grammar import correct_grammar
 
 
@@ -16,56 +16,79 @@ from django.conf import settings
 def task_status(request, task_id):
     result = AsyncResult(task_id)
     response_data = {
-        'status': result.status,
+        "status": result.status,
     }
-    if result.status == 'SUCCESS':
-        response_data['result'] = result.result
+    if result.status == "SUCCESS":
+        response_data["result"] = result.result
     return JsonResponse(response_data)
 
 
 class CorrectGrammarView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = TextContentSerializer(data=request.data)
-        if serializer.is_valid():
 
-            text_content = serializer.save()
-            text = serializer.validated_data.get("content")
-
-            task = correct_grammar.delay(text)
-
-            return Response(
-                {
-                    "message": "TextContent created successfully and task started.",
-                    "task_id": task.id,
-                    "text_content_id": text_content.id,
-                },
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-   
     def get(self, request, *args, **kwargs):
-        task_id = request.query_params.get('task_id')
-        if not task_id:
-            return Response({"error": "Task ID is required"},
-                            status=status.HTTP_400_BAD_REQUEST)
-      
-        result = correct_grammar.AsyncResult(task_id)
-        if result.state == 'PENDING':
-            response = {
-                'state': result.state,
-                'status': 'Pending...'
-            }
-        elif result.state != 'FAILURE':
-            response = {
-                'state': result.state,
-                'result': result.result
-            }
-        else:
-            response = {
-                'state': result.state,
-                'status': str(result.info),  # exception raised
-            }
-        return Response(response)
+        content = request.query_params.get("content")
+
+        if content:
+            if "cached_requests" not in request.session:
+                request.session["cached_requests"] = []
+            request.session["cached_requests"].append(content)
+            request.session.modified = True
+
+        cached_requests = request.session.get("cached_requests", [])
+
+        return Response(
+            {
+                "cached_requests": cached_requests,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# class CorrectGrammarView(APIView):
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = TextContentSerializer(data=request.data)
+
+#         if serializer.is_valid():
+
+#             text_content = serializer.save()
+#             text = serializer.validated_data.get("content")
+
+#             task = correct_grammar.delay(text)
+
+#             return Response(
+#                 {
+#                     "message": "TextContent created successfully and task started.",
+#                     "task_id": task.id,
+#                     "text_content_id": text_content.id,
+#                 },
+#                 status=status.HTTP_201_CREATED,
+#             )
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def get(self, request, *args, **kwargs):
+#         task_id = request.query_params.get('task_id')
+#         if not task_id:
+#             return Response({"error": "Task ID is required"},
+#                             status=status.HTTP_400_BAD_REQUEST)
+
+#         result = correct_grammar.AsyncResult(task_id)
+#         if result.state == 'PENDING':
+#             response = {
+#                 'state': result.state,
+#                 'status': 'Pending...'
+#             }
+#         elif result.state != 'FAILURE':
+#             response = {
+#                 'state': result.state,
+#                 'result': result.result
+#             }
+#         else:
+#             response = {
+#                 'state': result.state,
+#                 'status': str(result.info),  # exception raised
+#             }
+#         return Response(response)
 
 
 # class TextContentViewSet(viewsets.ViewSet):
