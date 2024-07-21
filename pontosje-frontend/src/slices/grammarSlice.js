@@ -12,17 +12,17 @@ export const correctGrammar = createAsyncThunk(
         let result = { data: {state: 'PENDING'} };
         const task_id = response.data.task_id;
 
-        while (result.data.state === 'PENDING' || result.data.state === 'PROGRESS') {
+        while (result.data.state !== 'SUCCESS' ) {
             result = await api.get(`/correct_grammar/?task_id=${task_id}`);
-
+            console.log('Waiting bitch')
             await new Promise(resolve => setTimeout(resolve, 1000)); 
         }
 
-        if (result.state === 'FAILURE') {
+        if (result.data.state === 'FAILURE') {
             throw new Error(result.status);
         }
-
-        return result.result;
+        console.log(result.data.result)
+        return result.data.result;
     }
 );
 
