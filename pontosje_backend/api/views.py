@@ -5,7 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import TextContent
 from .serializers import TextContentSerializer 
-from .process_grammar import correct_grammar
+from .process_grammar import correct_grammar, create_corrected_dict, remove_corrected_words_by_id
 
 
 from django.http import JsonResponse
@@ -24,14 +24,24 @@ def task_status(request, task_id):
 
 
 class CorrectGrammarView(APIView):
+
     def post(self, request, *args, **kwargs):
         serializer = TextContentSerializer(data=request.data)
         if serializer.is_valid():
-
             text_content = serializer.save()
-            text = serializer.validated_data.get("content")
 
-            task = correct_grammar.delay(text)
+            if not request.session.session_key:
+                request.session.create()
+
+            xml_text = serializer.validated_data.get("content")
+            print("POST SESSION KEY:", request.session.session_key)
+            corrected_ids = request.session.get('corrected', {})
+            print("CACHED CORRECTIONS", corrected_ids)
+            filtered_xml = remove_corrected_words_by_id(xml_text, corrected_ids)
+
+            print('GONNA PROCESS', filtered_xml)
+
+            task = correct_grammar.delay(filtered_xml)
 
             return Response(
                 {
@@ -65,25 +75,14 @@ class CorrectGrammarView(APIView):
                 'state': result.state,
                 'status': str(result.info),  # exception raised
             }
+
+        # cache corrected words
+        if result.state == "SUCCESS":
+            if not request.session.session_key:
+                request.session.create()
+            request.session['corrected'] = create_corrected_dict(result.result)
+            request.session.save()
+            print("GET SESSION KEY:", request.session.session_key)
+
         return Response(response)
 
-
-# class TextContentViewSet(viewsets.ViewSet):
-#     def create(self, request):
-#         serializer = TextContentSerializer(data=request.data)
-#         if serializer.is_valid():
-
-#             text_content = serializer.save()
-#             text = serializer.validated_data.get("content")
-
-#             task = correct_grammar.delay(text)
-
-#             return Response(
-#                 {
-#                     "message": "TextContent created successfully and task started.",
-#                     "task_id": task.id,
-#                     "text_content_id": text_content.id,
-#                 },
-#                 status=status.HTTP_201_CREATED,
-#             )
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

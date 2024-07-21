@@ -6,23 +6,24 @@ export const correctGrammar = createAsyncThunk(
     'grammar/correctGrammar',
     async (text) => {
         console.log('Posting: ', text);
-        const response = await api.post('/correct_grammar/', { content: text });
+        const response = await api.post('/correct_grammar/', { content: text}, {withCredentials: true } );
         console.log('Response: ', response);
 
         let result = { data: {state: 'PENDING'} };
         const task_id = response.data.task_id;
 
-        while (result.data.state === 'PENDING' || result.data.state === 'PROGRESS') {
-            result = await api.get(`/correct_grammar/?task_id=${task_id}`);
-
+        while (result.data.state !== 'SUCCESS' ) {
+            result = await api.get(`/correct_grammar/?task_id=${task_id}`, {withCredentials: true} );
+            console.log(result)
+            console.log('Waiting bitch')
             await new Promise(resolve => setTimeout(resolve, 1000)); 
         }
 
-        if (result.state === 'FAILURE') {
+        if (result.data.state === 'FAILURE') {
             throw new Error(result.status);
         }
-
-        return result.result;
+        console.log(result.data.result)
+        return result.data.result;
     }
 );
 
