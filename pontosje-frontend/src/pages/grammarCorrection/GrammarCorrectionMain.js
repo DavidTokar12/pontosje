@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import debounce from 'lodash.debounce';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { processHtmlContent } from "../../utils/grammarHtmlGenerator"
-import { correctGrammar, setOriginalText } from '../../slices/grammarSlice';
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import { socket } from '../../slices/websocket';
+import { initializeWebSocketConnection, terminateWebSocketConnection, sendWebsocketMessage } from '../../slices//websocket/websocketSlice';
 
 
 const GrammarCorrectionMain = () => {
@@ -15,54 +14,20 @@ const GrammarCorrectionMain = () => {
     const [editorChanging, setEditorChanging] = useState(false);
 
     const dispatch = useDispatch();
+
+
     const userChangeRef = useRef(true);
     const quillRef = useRef(null);
 
-    const websocketRef = useRef(null);
-    const initializeWebSocket = () => {
-        const url = 'ws://localhost:8000/ws/grammar/';
-
-        if (websocketRef.current) {
-            websocketRef.current.close();
-        }
-        const websocket = new WebSocket(url);
-
-        websocket.onopen = () => {
-            console.log('WebSocket connection established');
-        };
-
-        websocket.onmessage = (event) => {
-            console.log('Message from server:', event.data);
-        };
-
-        websocket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
-        websocket.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
-
-        websocketRef.current = websocket;
-    };
-
     useEffect(() => {
-        initializeWebSocket();
+        dispatch(initializeWebSocketConnection());
 
         return () => {
-            if (websocketRef.current) {
-                websocketRef.current.close();
-            }
+            dispatch(terminateWebSocketConnection());
         };
-    }, []);
+    }, [dispatch]);
 
-    const sendMessageToSocket = (message) => {
-        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
-            websocketRef.current.send(JSON.stringify({ text: message }));
-        } else {
-            console.error('WebSocket connection is not open');
-        }
-    };
+
 
     // const updateQuillContent = (newHtml) => {
     // if (quillRef.current) {
@@ -79,7 +44,7 @@ const GrammarCorrectionMain = () => {
     const debouncedUpdate = useCallback(
         debounce((value) => {
             const proceddedHtml = processHtmlContent(value);
-            sendMessageToSocket(proceddedHtml);
+            dispatch(sendWebsocketMessage(proceddedHtml));
             userChangeRef.current = false;
             // dispatch(setOriginalText(proceddedHtml));
             // dispatch(correctGrammar(proceddedHtml));

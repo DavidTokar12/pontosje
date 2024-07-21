@@ -23,12 +23,11 @@ class GrammarConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         try:
-            data = json.loads(text_data)
-            text = data.get("text", "")
 
-            self.message_cache.append({"text": text})
+            await self.send(text_data=json.dumps(text_data))
+            self.message_cache.append({"text": text_data})
 
-            corrected_text, text_correction = correct_grammar(text, self.message_cache)
+            corrected_text, text_correction = correct_grammar(text_data, self.message_cache)
 
             response = {
                 "corrected_text": corrected_text,
