@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config';
+import io from 'socket.io-client';
 
 
 const api = axios.create({

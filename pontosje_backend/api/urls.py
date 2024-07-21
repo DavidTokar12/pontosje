@@ -6,6 +6,5 @@ router = DefaultRouter()
 
 urlpatterns = [
     path("", include(router.urls)),
-    # path("task_status/<str:task_id>/", task_status, name="task-status"),
-    path("correct_grammar/", CorrectGrammarView.as_view(), name="correct_grammar"),
+    # path("correct_grammar/", CorrectGrammarView.as_view(), name="correct_grammar"),
 ]

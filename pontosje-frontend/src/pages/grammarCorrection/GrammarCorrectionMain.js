@@ -6,7 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import { processHtmlContent } from "../../utils/grammarHtmlGenerator"
 import { correctGrammar, setOriginalText } from '../../slices/grammarSlice';
 import 'react-perfect-scrollbar/dist/css/styles.css';
-
+import { socket } from '../../slices/websocket';
 
 
 const GrammarCorrectionMain = () => {
@@ -18,25 +18,72 @@ const GrammarCorrectionMain = () => {
     const userChangeRef = useRef(true);
     const quillRef = useRef(null);
 
-    // const updateQuillContent = (newHtml) => {
-    //     if (quillRef.current) {
-    //         const quillEditor = quillRef.current.getEditor();
-    //         quillEditor.setContents(quillEditor.clipboard.convert(newHtml));
+    const websocketRef = useRef(null);
+    const initializeWebSocket = () => {
+        const url = 'ws://localhost:8000/ws/grammar/';
 
-    //         // setTimeout(() => {
-    //         // quillEditor.focus();
-    //         // quillEditor.setSelection(newValueObject.indexAfterInsertion, 0); // Adjust the selection if needed
-    //         // }, 500);
+        if (websocketRef.current) {
+            websocketRef.current.close();
+        }
+        const websocket = new WebSocket(url);
+
+        websocket.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        websocket.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+        };
+
+        websocket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        websocket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        websocketRef.current = websocket;
+    };
+
+    useEffect(() => {
+        initializeWebSocket();
+
+        return () => {
+            if (websocketRef.current) {
+                websocketRef.current.close();
+            }
+        };
+    }, []);
+
+    const sendMessageToSocket = (message) => {
+        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            websocketRef.current.send(JSON.stringify({ text: message }));
+        } else {
+            console.error('WebSocket connection is not open');
+        }
+    };
+
+    // const updateQuillContent = (newHtml) => {
+    // if (quillRef.current) {
+    // const quillEditor = quillRef.current.getEditor();
+    // quillEditor.setContents(quillEditor.clipboard.convert(newHtml));
+
+    // setTimeout(() => {
+    // quillEditor.focus();
+    // quillEditor.setSelection(newValueObject.indexAfterInsertion, 0); // Adjust the selection if needed
+    // }, 500);
     //     }
     // };
 
     const debouncedUpdate = useCallback(
         debounce((value) => {
             const proceddedHtml = processHtmlContent(value);
-
-            dispatch(setOriginalText(proceddedHtml));
-            dispatch(correctGrammar(proceddedHtml));
-            // userChangeRef.current = false;// Indicate that the next change is programmatic
+            sendMessageToSocket(proceddedHtml);
+            userChangeRef.current = false;
+            // dispatch(setOriginalText(proceddedHtml));
+            // dispatch(correctGrammar(proceddedHtml));
+            // // Indicate that the next change is programmatic
             // setEditorHtml(proceddedHtml);
             // updateQuillContent(proceddedHtml);
         }, 1000),

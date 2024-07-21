@@ -5,7 +5,6 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import TextContent
 from .serializers import TextContentSerializer
-from .process_grammar import correct_grammar
 
 
 from django.http import JsonResponse

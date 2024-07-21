@@ -17,10 +17,12 @@ from corsheaders.defaults import default_headers
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-CELERY_BROKER_URL = "amqp://rabbitmq:5672/"
-CELERY_RESULT_BACKEND = "rpc"
-CELERY_IMPORTS = ("api.process_grammar",)
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -33,21 +35,35 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["pontosje.herokuapp.com", "localhost"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    # dependencies
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "api",
     "rest_framework",
     "corsheaders",
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
+    "django_celery_results",
+    # code
+    "api",
+    "grammar_correction",
 ]
+
+ASGI_APPLICATION = "pontosje_backend.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
+        "CONFIG": {
+            "host": "amqp://guest:guest@127.0.0.1/asgi",
+        },
+    },
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

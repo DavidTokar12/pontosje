@@ -11,6 +11,14 @@ const processHtmlContent = (html) => {
     const tokenizer = new Tokenizer('Hungarian');
     const wrapper = doc.createElement('full-text');
 
+    const bodyText = Array.from(doc.body.childNodes)
+        .map(node => node.textContent || '')
+        .join(' ')
+        .trim();
+    const fullTextId = generateIdFromText(bodyText, 'full-text', 0);
+    wrapper.id = fullTextId;
+
+
     doc.body.querySelectorAll('*').forEach((element) => {
         const elementText = element.textContent || '';
         tokenizer.setEntry(elementText);
