@@ -24,10 +24,14 @@ def task_status(request, task_id):
 
 
 class CorrectGrammarView(APIView):
+
     def post(self, request, *args, **kwargs):
         serializer = TextContentSerializer(data=request.data)
         if serializer.is_valid():
             text_content = serializer.save()
+
+            if not request.session.session_key:
+                request.session.create()
 
             xml_text = serializer.validated_data.get("content")
             print("POST SESSION KEY:", request.session.session_key)
@@ -74,7 +78,10 @@ class CorrectGrammarView(APIView):
 
         # cache corrected words
         if result.state == "SUCCESS":
+            if not request.session.session_key:
+                request.session.create()
             request.session['corrected'] = create_corrected_dict(result.result)
+            request.session.save()
             print("GET SESSION KEY:", request.session.session_key)
 
         return Response(response)
