@@ -8,10 +8,7 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import GrammarCorrectionWrapper from './pages/grammarCorrection/GrammarCorrectionWrapper';
 import Box from '@mui/material/Box';
-import { useSelector } from 'react-redux';
-import { selectIsDrawerOpen, selectDrawerWidth } from './slices/appSlice'; // Adjust the path as necessary
 import CssBaseline from '@mui/material/CssBaseline';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 
 // const DrawerHeader = styled('div')(({ theme }) => ({
 //   display: 'flex',

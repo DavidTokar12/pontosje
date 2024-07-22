@@ -11,7 +11,6 @@ const websocketMiddleware = store => next => action => {
     };
 
     const onMessage = (event) => {
-        console.log('Message from server:', event.data);
         store.dispatch({ type: WEBSOCKET_MESSAGE_RECEIVED, payload: event.data });
     };
 
@@ -50,7 +49,6 @@ const websocketMiddleware = store => next => action => {
 
         case WEBSOCKET_SEND:
             if (websocket !== null) {
-                console.log("Sending message: ", action.payload);
                 websocket.send(action.payload);
             }
             break;
