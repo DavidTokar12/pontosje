@@ -37,7 +37,6 @@ const websocketSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(WEBSOCKET_MESSAGE_RECEIVED, (state, action) => {
-                console.log('Received message:', action.payload);
                 state.messages.push(action.payload);
                 state.error = null;
                 state.status = 'connected';

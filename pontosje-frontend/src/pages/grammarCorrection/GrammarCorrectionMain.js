@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce';
 import { processHtmlContent } from "../../utils/grammarHtmlGenerator"
 import { initializeWebSocketConnection, terminateWebSocketConnection, sendWebsocketMessage } from '../../slices//websocket/websocketSlice';
 import { minHeight } from '@mui/system';
+import './grammarCorrectionStyles.css';
 
 const commonEditorStyle = {
     minHeight: '100%',
@@ -19,7 +20,7 @@ const commonEditorStyle = {
 };
 
 const GrammarCorrectionMain = () => {
-    const [htmlContent, setHtmlContent] = useState('');
+    const [parsedhtmlContent, setParsedHtmlContent] = useState('');
 
     const editorRef = useRef(null);
     const displayRef = useRef(null);
@@ -36,85 +37,41 @@ const GrammarCorrectionMain = () => {
 
     const debouncedUpdate = useCallback(
         debounce((value) => {
-
-            // dispatch(sendWebsocketMessage(processedHtml));
-
-            // const selection = document.getSelection();
-            // const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-
-            // editorRef.current.innerHTML = processedHtml;
-
-            // if (range) {
-            //     const newSelection = document.getSelection();
-            //     newSelection.removeAllRanges();
-
-            //     try {
-            //         newSelection.addRange(range);
-            //     } catch (e) {
-            //         console.warn('Could not restore previous selection range:', e);
-            //     }
-            // }
-
-
+            dispatch(sendWebsocketMessage(value));
         }, 1000),
         [dispatch]
     );
 
-    // useLayoutEffect(() => {
-    //     debouncedUpdate(htmlContent);
-    // }, [htmlContent]);
+    useEffect(() => {
+        debouncedUpdate(parsedhtmlContent);
+    }, [parsedhtmlContent]);
 
-    // useLayoutEffect(() => {
-    //     if (selectionState && editorRef.current) {
-    //         const { startContainer, startOffset, endContainer, endOffset } = selectionState;
-    //         if (startContainer && endContainer) {
-    //             try {
-    //                 const range = document.createRange();
-    //                 range.setStart(startContainer, startOffset);
-    //                 range.setEnd(endContainer, endOffset);
-
-    //                 const selection = window.getSelection();
-
-    //                 selection.removeAllRanges();
-    //                 selection.addRange(range);
-    //             } catch (error) {
-    //                 console.error('Error restoring selection:', error);
-    //             }
-    //         }
-    //     }
-    // }, [selectionState, editorRef]);
 
 
     const handleEditorChange = useCallback((event) => {
-        console.log("Xd");
-
         const content = event.target.innerHTML;
-        setHtmlContent(content);
 
-        // const processedHtml = processHtmlContent(content);
-        // setHtmlContent(processedHtml);
+        const processedHtml = processHtmlContent(content);
+        setParsedHtmlContent(processedHtml);
     }, []);
 
-    // useEffect(() => {
-    //     const syncScroll = (e) => {
-    //         if (e.target === displayRef.current) {
-    //             editorRef.current.scrollTop = e.target.scrollTop;
-    //             editorRef.current.scrollLeft = e.target.scrollLeft;
-    //         } else if (e.target === editorRef.current) {
-    //             displayRef.current.scrollTop = e.target.scrollTop;
-    //             displayRef.current.scrollLeft = e.target.scrollLeft;
-    //         }
-    //     };
 
-    //     displayRef.current?.addEventListener('scroll', syncScroll);
-    //     editorRef.current?.addEventListener('scroll', syncScroll);
+    const handlePaste = useCallback((event) => {
+        event.preventDefault();
+        const clipboardData = event.clipboardData || window.clipboardData;
+        const text = clipboardData.getData('text');
+        document.execCommand('insertText', false, text);
+    }, []);
 
-    //     return () => {
-    //         displayRef.current?.removeEventListener('scroll', syncScroll);
-    //         editorRef.current?.removeEventListener('scroll', syncScroll);
-    //     };
-    // }, []);
-
+    useEffect(() => {
+        const editorElement = editorRef.current;
+        if (editorElement) {
+            editorElement.addEventListener('paste', handlePaste);
+            return () => {
+                editorElement.removeEventListener('paste', handlePaste);
+            };
+        }
+    }, [handlePaste]);
 
     return (
         <div style={{ position: 'relative', height: '100%', width: "100%", overflow: "auto" }}>
@@ -125,8 +82,9 @@ const GrammarCorrectionMain = () => {
                     top: 0,
                     left: 0,
                     pointerEvents: 'none',
+                    zIndex: 100
                 }}
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
+                dangerouslySetInnerHTML={{ __html: parsedhtmlContent }}
             />
             <div
                 ref={editorRef}
@@ -140,7 +98,7 @@ const GrammarCorrectionMain = () => {
                     left: 0,
                     cursor: 'text',
                     caretColor: 'blue',
-                    color: 'transparent',
+                    color: 'lightgray',
                 }}
             />
         </div>
