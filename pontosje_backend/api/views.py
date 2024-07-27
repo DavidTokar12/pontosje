@@ -1,10 +1,10 @@
 # views.py
 
 from rest_framework.views import APIView
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
-from .models import TextContent
-from .serializers import TextContentSerializer
+from .models import TextContent, Prospect
+from .serializers import TextContentSerializer, ProspectSerializer
 
 
 from django.http import JsonResponse
@@ -42,6 +42,10 @@ class CorrectGrammarView(APIView):
             status=status.HTTP_200_OK,
         )
 
+
+class ProspectCreateView(generics.CreateAPIView):
+    queryset = Prospect.objects.all()
+    serializer_class = ProspectSerializer
 
 # class CorrectGrammarView(APIView):
 
