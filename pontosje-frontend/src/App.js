@@ -9,29 +9,32 @@ import ProfilePage from './pages/ProfilePage';
 import GrammarCorrectionWrapper from './pages/grammarCorrection/GrammarCorrectionWrapper';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 
 const App = () => {
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <Router>
-        <Navbar />
-        <PontosjeAppDrawer />
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <Router>
+          <Navbar />
+          <PontosjeAppDrawer />
 
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }} style={{ height: "calc( 100vh - 64px )", width: "100wh", margin: 0, marginTop: "64px", padding: 0 }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/write" element={<GrammarCorrectionWrapper />} />
-          </Routes>
+          <Box component="main" sx={{ flexGrow: 1, p: 3 }} style={{ height: "calc( 100vh - 64px )", width: "100wh", margin: 0, marginTop: "64px", padding: 0 }}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/write" element={<GrammarCorrectionWrapper />} />
+            </Routes>
 
-        </Box>
-      </Router >
-    </Box>
+          </Box>
+        </Router >
+      </Box>
+    </ThemeProvider>
   );
 };
 

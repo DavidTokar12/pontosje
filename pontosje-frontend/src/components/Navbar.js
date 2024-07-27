@@ -17,8 +17,7 @@ const Navbar = () => {
     const drawerWidth = useSelector(selectDrawerWidth);
 
     return (
-        <AppBar position="fixed"
-
+        <AppBar position="fixed" color="primary"
             style={{
                 zIndex: theme.zIndex.drawer + 1,
                 transition: theme.transitions.create(['width', 'margin'], {
@@ -35,25 +34,32 @@ const Navbar = () => {
                     edge="start"
                     color="inherit"
                     aria-label="menu"
-                    // onClick={toggleDrawer}
                     sx={{ mr: 2 }}
                 >
-                    <MenuIcon onClick={() => dispatch(toggleDrawer())} />
+                    <MenuIcon sx={{ color: theme.palette.text.secondary }} onClick={() => dispatch(toggleDrawer())} />
                 </IconButton>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    pontosje
+                <Typography variant="h5" sx={{ flexGrow: 1, color: theme.palette.text.primary }}>
+                    pontosjé
                 </Typography>
-                <Button color="inherit" component={Link} to="/">
+                <Button sx={{ color: theme.palette.text.secondary }} component={Link} to="/">
                     Főoldal
                 </Button>
-                <Button color="inherit" component={Link} to="/pricing">
+                <Button sx={{ color: theme.palette.text.secondary }} component={Link} to="/pricing">
                     Árazás
                 </Button>
-                <Button color="inherit" component={Link} to="/signup">
-                    Regisztráció
+                <Button sx={{
+                    color: theme.palette.primary.main,
+                    backgroundColor: theme.palette.text.primary,
+                    fontWeight: 'bold',
+                    border: `2px solid ${theme.palette.secondary.main}`,
+                    '&:hover': {
+                        backgroundColor: theme.palette.primary.highlighted,
+                    }
+                }} component={Link} to="/signup">
+                    Regisztráció: Ingyen!
                 </Button>
             </Toolbar>
-        </AppBar >
+        </AppBar>
     );
 };
 
