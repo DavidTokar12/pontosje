@@ -76,7 +76,7 @@ function wrapWordsAndSentences(node, htmlDoc, sentenceIdx = 0, wordIdx = 0) {
     } else if (node.nodeType === Node.ELEMENT_NODE) {
         node.childNodes.forEach(child => wrapWordsAndSentences(child, htmlDoc, sentenceIdx, wordIdx));
     }
-}
+};
 
 const wrappTagglesContent = (html) => {
     // Regular expression to match text nodes that are not inside tags

@@ -1,0 +1,7 @@
+grammar-error {
+    background: red;
+}
+
+grammar-error * {
+    background: red;
+}
