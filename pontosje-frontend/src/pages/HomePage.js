@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Container, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 const HomePage = () => {
     return (
@@ -11,7 +11,7 @@ const HomePage = () => {
             <Typography variant="body1" gutterBottom>
                 Itt megtudhatja, hogyan működik a pontosje.
             </Typography>
-            <Button variant="contained" color="primary" component={Link} to="/signup">
+            <Button variant="contained" color="primary" component={RouterLink} to="/signup">
                 Regisztráljon ingyen
             </Button>
         </Container>

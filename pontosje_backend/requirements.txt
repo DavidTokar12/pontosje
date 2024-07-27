@@ -8,3 +8,7 @@ gunicorn==22.0.0
 whitenoise==6.7.0
 celery
 amqp
+daphne
+django_celery_results
+channels
+channels_rabbitmq

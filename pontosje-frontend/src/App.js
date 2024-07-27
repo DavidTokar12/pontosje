@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import PontosjeAppDrawer from './components/Drawer';
@@ -9,13 +9,6 @@ import ProfilePage from './pages/ProfilePage';
 import GrammarCorrectionWrapper from './pages/grammarCorrection/GrammarCorrectionWrapper';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-
-// const DrawerHeader = styled('div')(({ theme }) => ({
-//   display: 'flex',
-//   alignItems: 'center',
-//   justifyContent: 'flex-end',
-//   ...theme.mixins.toolbar,
-// }));
 
 
 const App = () => {

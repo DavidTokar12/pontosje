@@ -32,7 +32,6 @@ class GrammarConsumer(AsyncWebsocketConsumer):
             response = {
                 "corrected_text": corrected_text,
                 "text_correction": text_correction,
-                "message_cache": self.message_cache,
             }
 
             await self.send(text_data=json.dumps(response))
