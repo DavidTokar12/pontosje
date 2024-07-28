@@ -6,6 +6,5 @@ router = DefaultRouter()
 
 urlpatterns = [
     path("", include(router.urls)),
-    # path("correct_grammar/", CorrectGrammarView.as_view(), name="correct_grammar"),
     path('prospects/', ProspectCreateView.as_view(), name='prospect-create'),
 ]

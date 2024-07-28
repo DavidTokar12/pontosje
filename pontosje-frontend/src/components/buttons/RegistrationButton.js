@@ -6,7 +6,6 @@ import { useTheme } from '@mui/material/styles';
 
 const RegistrationButton = ({ style }) => {
     const theme = useTheme();
-
     return (
         <Button sx={{
             color: theme.palette.primary.main,
@@ -17,7 +16,7 @@ const RegistrationButton = ({ style }) => {
                 backgroundColor: theme.palette.primary.highlighted,
             },
             ...style
-        }} component={Link} to="/signup">
+        }} component={Link} to="/regisztracio">
             Regisztráció: Ingyen!
         </Button>
     );

@@ -12,6 +12,7 @@
     "@reduxjs/toolkit": "^2.2.6",
     "axios": "^1.7.2",
     "crypto-js": "^4.2.0",
+    "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "quill": "^2.0.2",
@@ -28,7 +29,8 @@
     "socket.io-client": "^4.7.5",
     "web-vitals": "^4.2.1",
     "webpack": "^5.93.0",
-    "websocket": "^1.0.35"
+    "websocket": "^1.0.35",
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -8,24 +8,9 @@ import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import GrammarCorrectionWrapper from './pages/grammarCorrection/GrammarCorrectionWrapper';
 import Box from '@mui/material/Box';
-import { useSelector, useDispatch } from 'react-redux';
-import { login, selectIsAuthenticated } from '../src/slices/authSlice';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const AppRouter = () => {
-
-    const isAuthenticated = useSelector(selectIsAuthenticated);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!isAuthenticated) {
-            dispatch(login({ username: 'testUser', password: 'testPassword' }));
-        } else {
-            navigate('/helyesiras');
-        }
-    }, [isAuthenticated, dispatch, navigate]);
-
     return (
         <>
             <Navbar />
