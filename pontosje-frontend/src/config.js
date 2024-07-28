@@ -4,6 +4,5 @@ const config = {
     websocketUrl: process.env.REACT_APP_WEBSOCKET_URL,
 };
 
-console.log(config)
 
 export default config;

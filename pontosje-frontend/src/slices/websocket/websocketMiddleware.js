@@ -1,5 +1,4 @@
 // websocketMiddleware.js
-import config from '../../config';
 import { WEBSOCKET_CONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_SEND, WEBSOCKET_MESSAGE_RECEIVED, WEBSOCKET_ERROR } from './websocketActions';
 
 let websocket = null;
