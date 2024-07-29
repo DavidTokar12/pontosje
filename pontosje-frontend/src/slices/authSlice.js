@@ -3,12 +3,35 @@ import axios from 'axios';
 import config from '../config';
 import Cookies from 'js-cookie';
 import api from '../apiConfig';
+import _ from 'lodash';
+
+export const authenticateWithToken = createAsyncThunk('auth/authenticateWithToken', async (_, { rejectWithValue }) => {
+    const accessToken = Cookies.get('accessToken');
+    try {
+
+        const response = await axios.post(`${config.apiBaseUrl}/api/token/verify/`, {
+            token: accessToken,
+        });
+
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
 
 export const login = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
     try {
         const response = await api.post('/api/token/', credentials);
         Cookies.set('accessToken', response.data.access);
         Cookies.set('refreshToken', response.data.refresh);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+export const googleLogin = createAsyncThunk('auth/googleLogin', async (authCode, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${config.apiBaseUrl}/api/auth/google/`, { code: authCode });
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response.data);
@@ -26,19 +49,11 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { re
     }
 });
 
-export const googleLogin = createAsyncThunk('auth/googleLogin', async (authCode, { rejectWithValue }) => {
-    try {
-        const response = await axios.post(`${config.apiBaseUrl}/api/auth/google/`, { code: authCode });
-        Cookies.set('accessToken', response.data.access);
-        Cookies.set('refreshToken', response.data.refresh);
-        return response.data;
-    } catch (error) {
-        return rejectWithValue(error.response.data);
-    }
-});
+
 
 export const signup = createAsyncThunk('auth/signup', async (userData, { rejectWithValue }) => {
     try {
+        console.log('User data being sent:', userData);
         const response = await axios.post(`${config.apiBaseUrl}/api/signup/`, userData);
         Cookies.set('accessToken', response.data.access);
         Cookies.set('refreshToken', response.data.refresh);
@@ -48,19 +63,7 @@ export const signup = createAsyncThunk('auth/signup', async (userData, { rejectW
     }
 });
 
-export const authenticateWithToken = createAsyncThunk('auth/authenticateWithToken', async (_, { rejectWithValue }) => {
-    const accessToken = Cookies.get('accessToken');
-    try {
-        const response = await api.get('/api/authenticate/', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-        return response.data;
-    } catch (error) {
-        return rejectWithValue(error.response.data);
-    }
-});
+
 
 
 const authSlice = createSlice({
@@ -84,59 +87,85 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(login.pending, (state) => {
-                state.status = 'loading';
-            })
             .addCase(login.fulfilled, (state, action) => {
-                state.status = 'succeeded';
                 state.accessToken = action.payload.access;
                 state.refreshToken = action.payload.refresh;
+
+                Cookies.set('accessToken', action.payload.access);
+                Cookies.set('refreshToken', action.payload.refresh);
             })
             .addCase(login.rejected, (state, action) => {
                 state.status = 'failed';
+
                 state.accessToken = null;
+                state.accessToken = null;
+
+                Cookies.remove('accessToken');
+                Cookies.remove('refreshToken');
+
                 state.error = action.payload;
             })
+
             .addCase(refreshToken.fulfilled, (state, action) => {
                 state.accessToken = action.payload.access;
             })
+
             .addCase(refreshToken.rejected, (state, action) => {
+                state.status = 'failed';
+
                 state.accessToken = null;
                 state.refreshToken = null;
-                state.status = 'failed';
+
+                Cookies.remove('accessToken');
+                Cookies.remove('refreshToken');
+
                 state.error = action.payload;
             })
             .addCase(googleLogin.fulfilled, (state, action) => {
-                state.status = 'succeeded';
                 state.accessToken = action.payload.access;
                 state.refreshToken = action.payload.refresh;
+
+                Cookies.set('accessToken', action.payload.access);
+                Cookies.set('refreshToken', action.payload.refresh);
             })
             .addCase(googleLogin.rejected, (state, action) => {
                 state.status = 'failed';
+
                 state.accessToken = null;
                 state.refreshToken = null;
+
+                Cookies.remove('accessToken');
+                Cookies.remove('refreshToken');
+
                 state.error = action.payload;
             })
-            .addCase(signup.pending, (state) => {
-                state.status = 'loading';
-            })
             .addCase(signup.fulfilled, (state, action) => {
-                state.status = 'succeeded';
                 state.accessToken = action.payload.access;
                 state.refreshToken = action.payload.refresh;
             })
             .addCase(signup.rejected, (state, action) => {
                 state.status = 'failed';
+
+                state.accessToken = null;
+                state.refreshToken = null;
+
+                Cookies.remove('accessToken');
+                Cookies.remove('refreshToken');
+
                 state.error = action.payload;
             })
-            .addCase(authenticateWithToken.pending, (state) => {
-                state.status = 'loading';
-            })
             .addCase(authenticateWithToken.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.status = "succeeded";
             })
             .addCase(authenticateWithToken.rejected, (state, action) => {
                 state.status = 'failed';
+
+                state.accessToken = null;
+                state.refreshToken = null;
+
+                Cookies.remove('accessToken');
+                Cookies.remove('refreshToken');
+
                 state.error = action.payload;
             });
         ;
@@ -145,5 +174,7 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 
-export const selectIsAuthenticated = (state) => state.auth.accessToken !== null;
+export const selectIsAuthenticated = (state) => { return state.auth.status === "succeeded" };
+export const selectToken = (state) => state.auth.accessToken;
+
 export default authSlice.reducer;

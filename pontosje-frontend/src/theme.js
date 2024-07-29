@@ -12,6 +12,7 @@ const theme = createTheme({
         },
         background: {
             default: '#fff',
+            shaded: '#e0f7fa',
         },
 
         text: {

@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Prospect
-# Register your models here.
+from .models import CustomUser
 
-admin.site.register(Prospect)
+admin.site.register(CustomUser)

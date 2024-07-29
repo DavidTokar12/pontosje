@@ -32,8 +32,29 @@ SECRET_KEY = "django-insecure-*u06(%js$vf7=1_ny2h3c9h78ivszhcu4l^n+9l(-3h3ul#_1&
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+LOGGING = {
+    "version": 1,
+    "formatters": {
+        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"},
+        "simple": {"format": "%(levelname)s %(message)s"},
+    },
+    "handlers": {
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "simple"},
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
+if DEBUG:
+    # make all loggers use the console.
+    for logger in LOGGING["loggers"]:
+        LOGGING["loggers"][logger]["handlers"] = ["console"]
 ALLOWED_HOSTS = ["pontosje.herokuapp.com", "localhost", "127.0.0.1"]
+
 
 # Application definition
 
@@ -93,10 +114,18 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER": "api.serializers.CustomRegisterSerializer",
+}
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=12),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=14),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=5),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
@@ -127,6 +156,9 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+# settings.py
+AUTH_USER_MODEL = "api.CustomUser"
 
 SITE_ID = 1
 

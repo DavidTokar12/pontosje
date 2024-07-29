@@ -5,7 +5,8 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import GoogleButton from 'react-google-button';
 import BasicLinkButton from '../components/buttons/BasicLinkButton';
-import RegistrationButton from '../components/buttons/RegistrationButton';
+import { useDispatch } from 'react-redux';
+import { signup } from '../slices/authSlice';
 
 const validationSchema = yup.object({
     name: yup.string().required('A név kötelező'),
@@ -21,6 +22,9 @@ const validationSchema = yup.object({
 
 
 const SignUpPage = () => {
+
+    const dispatch = useDispatch();
+
     const theme = useTheme();
 
     const formik = useFormik({
@@ -32,7 +36,7 @@ const SignUpPage = () => {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
-            console.log(values);
+            dispatch(signup({ "username": values.name, "email": values.email, "password": values.password }));
         },
         validateOnChange: true,
         validateOnBlur: true,
@@ -129,6 +133,8 @@ const SignUpPage = () => {
                                 },
                                 width: '100%',
                                 height: '4rem',
+                                marginBottom: theme.spacing(2),
+                                marginTop: theme.spacing(2),
                             }}
                                 onClick={formik.handleSubmit}
                             >
@@ -138,6 +144,7 @@ const SignUpPage = () => {
 
                             <GoogleButton
                                 type="light"
+                                label='Regisztráció Google fiókkal'
                                 style={{
                                     width: '100%',
                                     height: "4rem",
